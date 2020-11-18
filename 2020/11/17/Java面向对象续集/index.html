@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Java面向对象续集 | 不负韶华</title><meta name="keywords" content="Java语言基础"><meta name="author" content="qin-mo"><meta name="copyright" content="qin-mo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="问题抛出我们在重写(覆盖)equals方法时，为什么一定要重写(覆盖)hashCode方法？  题外话：在前一篇文章中我们提到了在现实生活中可能会碰到同名同姓同年龄的极个别特例，那么我们接着这个例子来做一个深入解析。 思考：若碰到上述个例，当我们的财务核算工资并下发时，是否会给同一个名员工发双倍的工资？ 提及：在前一篇文章中我们最后留下了一个思考，关于引入Set里的元素来进行操作 12345678">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java面向对象续集">
+<meta property="og:url" content="http://example.com/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/">
+<meta property="og:site_name" content="不负韶华">
+<meta property="og:description" content="问题抛出我们在重写(覆盖)equals方法时，为什么一定要重写(覆盖)hashCode方法？  题外话：在前一篇文章中我们提到了在现实生活中可能会碰到同名同姓同年龄的极个别特例，那么我们接着这个例子来做一个深入解析。 思考：若碰到上述个例，当我们的财务核算工资并下发时，是否会给同一个名员工发双倍的工资？ 提及：在前一篇文章中我们最后留下了一个思考，关于引入Set里的元素来进行操作 12345678">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-11-17T13:19:29.000Z">
+<meta property="article:modified_time" content="2020-11-18T01:57:25.321Z">
+<meta property="article:author" content="qin-mo">
+<meta property="article:tag" content="Java语言基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-11-18 09:57:25'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/img/hope.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">不负韶华</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">Java面向对象续集</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-11-17T13:19:29.000Z" title="Created 2020-11-17 21:19:29">2020-11-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-11-18T01:57:25.321Z" title="Updated 2020-11-18 09:57:25">2020-11-18</time></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="问题抛出"><a href="#问题抛出" class="headerlink" title="问题抛出"></a><strong>问题抛出</strong></h3><p>我们在重写(覆盖)equals方法时，为什么一定要重写(覆盖)hashCode方法？</p>
+<hr>
+<p><strong>题外话</strong>：在前一篇文章中我们提到了在现实生活中可能会碰到同名同姓同年龄的极个别特例，那么我们接着这个例子来做一个深入解析。</p>
+<p><strong>思考</strong>：若碰到上述个例，当我们的财务核算工资并下发时，是否会给同一个名员工发双倍的工资？</p>
+<p><strong>提及</strong>：在前一篇文章中我们最后留下了一个思考，关于引入Set里的元素来进行操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSame</span><span class="params">(Person person)</span></span>&#123;</span><br><span class="line">        <span class="comment">//如果名字相同返回true，否则返回false</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.name.equals(person.name))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    String str1 = <span class="keyword">new</span> String(<span class="string">&quot;王伟&quot;</span>);</span><br><span class="line">    String str2 = <span class="keyword">new</span> String(<span class="string">&quot;王伟&quot;</span>);</span><br><span class="line">    Set&lt;String&gt; strSet = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    strSet.add(str1);</span><br><span class="line">    strSet.add(str2);</span><br><span class="line">    System.out.println(<span class="string">&quot;strSet.size():&quot;</span> + strSet.size());</span><br><span class="line">    </span><br><span class="line">    Person person1 = <span class="keyword">new</span> Person(<span class="string">&quot;王伟&quot;</span>);</span><br><span class="line">    Person person2 = <span class="keyword">new</span> Person(<span class="string">&quot;王伟&quot;</span>);</span><br><span class="line">    Set&lt;Person&gt; perSet = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    perSet.add(person1);</span><br><span class="line">    perSet.add(person2);</span><br><span class="line">    System.out.println(<span class="string">&quot;perSet.size():&quot;</span> + perSet.size());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">    strSet.size(): <span class="number">1</span></span><br><span class="line">    strSet.size(): <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>我们在Person这个类中，虽然写了一个isSame()方法来判断业务上是否相等，看上去解决了当前的问题，然而，我们假设我们就是上文提到的财务人员，正在给员工批量发工资，王伟出现了两次，虽然我们用Set去重，但是还是会给王伟发两次工资。</p>
+<p><strong>注意</strong>：当我们要判断两个对象的内容是否相等时，<strong>不要自己写方法</strong>(isSame())去做判断，而是<strong>应该重写父类的equals方法</strong>(这里的父类是Object),虽然我们通过String重写了equals方法，导致size打印为1，但是Person没有重写，因此Set没办法判断这两个”王伟”是否是同一个人，所以再次打印size为2。</p>
+<p><strong>思路</strong>：像String方法一样，重写Person的equals方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加@Override，让编译器帮助检查是否真的覆盖父类方法</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Person other)</span></span>&#123;</span><br><span class="line">    <span class="comment">//分别判断，先判断是否为同一个对象，如果是，则直接返回true</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span> == other)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//判断other是否是类Person的实例</span></span><br><span class="line">    <span class="keyword">if</span>(other <span class="keyword">instanceof</span> Person)&#123;</span><br><span class="line">        <span class="comment">//如果是Person的实例，转换为Person类型</span></span><br><span class="line">        Person otherPerson = (Person)other;</span><br><span class="line">        <span class="comment">//利用name(String)本身的equals来比较。</span></span><br><span class="line">        <span class="keyword">return</span> name.equals(otherPerson.name);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//后判断其他情况,并返回false</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">测试：</span><br><span class="line">    </span><br><span class="line"><span class="comment">//引入List辅助测试</span></span><br><span class="line">    List&lt;Person&gt;perList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="comment">//把person放入perList中，但是并没有放Person2</span></span><br><span class="line">perList.add(person);</span><br><span class="line"></span><br><span class="line"><span class="comment">//set</span></span><br><span class="line">Set&lt;Person&gt;pSet = <span class="keyword">new</span> HashSet&lt;Person&gt;();</span><br><span class="line"><span class="comment">//把person放入List中，但是并没有放Person2</span></span><br><span class="line">pSet.add(person);</span><br><span class="line">System.out.println(<span class="string">&quot;perList.contains(person2):&quot;</span> + person1.equals(person2));</span><br><span class="line"><span class="comment">//注意，我们在List并没有放入person2,但是调用List的contains方法结果为true</span></span><br><span class="line">System.out.println(<span class="string">&quot;perList.contains(person2):&quot;</span> + perList.contains(person2));</span><br><span class="line"><span class="comment">//打印false</span></span><br><span class="line">System.out.println(<span class="string">&quot;pSet.contains(person2):&quot;</span> + pSet.contains(person2));</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">    person1.equals(person2):<span class="keyword">true</span></span><br><span class="line">    perList.contains(person2):<span class="keyword">true</span></span><br><span class="line">    pSet.contains(person2):<span class="keyword">false</span></span><br><span class="line">    </span><br><span class="line">第一段代码再编译结果：</span><br><span class="line">    strSet.size():<span class="number">1</span></span><br><span class="line">    perSet.size():<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>Person类重写equals()方法后，虽然List可以编译支持，但是Set还是为false。所以，要完美支持HashMap、HashSet、LinkedHashMap、ConcurrentHashMap这些类，不但要<strong>重写equals方法，还要重写hashCode()方法</strong>。</p>
+<p>重写Person类里的hashCode()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//重写hashCode方法，直接返回name的hashCode</span></span><br><span class="line">    <span class="keyword">return</span> name.hashCode();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>总结</strong>：<strong>重写equals方法的时候要重写hashCode方法</strong></p>
+<p><strong>解释</strong>：对象再<strong>没有重写前，equals比较的是两个对象的内存地址是否相同</strong>，如果相同，则两个对象的hashcode肯定相同。但是<strong>重写对象的equals方法一般都是比较对象的属性值是否相等</strong>来确定这两个对象是否为相同对象。在这种情况下用List里面是没有问题的，而contains也一样，因为contains方法的底层就是调用对象的equals方法。</p>
+<p><strong>重点</strong>：**<em>set集合是首先判断对象的hashcode，如果相等，再判断equals方法。如果hashcode都不相等，那么就不会再判断equals了，而是直接返回false值**</em>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">qin-mo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/">http://example.com/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://github.com/qin-mo">qin-mo</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/">Java语言基础</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Java面向对象</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/11/16/Java基础语法/" title="Java基础语法"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-16</div><div class="title">Java基础语法</div></div></a></div><div><a href="/2020/11/17/Java面向对象/" title="Java面向对象"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-17</div><div class="title">Java面向对象</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/img/hope.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">qin-mo</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qin-mo"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8A%9B%E5%87%BA"><span class="toc-number">1.</span> <span class="toc-text">问题抛出</span></a></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/" title="Java面向对象续集"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java面向对象续集"/></a><div class="content"><a class="title" href="/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BB%AD%E9%9B%86/" title="Java面向对象续集">Java面向对象续集</a><time datetime="2020-11-17T13:19:29.000Z" title="Created 2020-11-17 21:19:29">2020-11-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java面向对象"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java面向对象"/></a><div class="content"><a class="title" href="/2020/11/17/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java面向对象">Java面向对象</a><time datetime="2020-11-17T00:38:08.000Z" title="Created 2020-11-17 08:38:08">2020-11-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/11/16/Java%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" title="Java基础语法"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基础语法"/></a><div class="content"><a class="title" href="/2020/11/16/Java%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" title="Java基础语法">Java基础语法</a><time datetime="2020-11-16T06:44:23.000Z" title="Created 2020-11-16 14:44:23">2020-11-16</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By qin-mo</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
